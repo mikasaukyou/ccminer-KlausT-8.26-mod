@@ -113,6 +113,7 @@ const char *algo_names[] =
 	"jackpot",
 	"luffa",
 	"lyra2v2",
+	"lyra2vc0ban",
 	"lyra2v3",
 	"myr-gr",
 	"nist5",
@@ -253,7 +254,8 @@ Options:\n\
 			keccak      Keccak-256 (Maxcoin)\n\
 			luffa       Doomcoin\n\
 			lyra2v2     Monacoin\n\
-            lyra2v3     Vertcoin\n\
+			lyra2vc0ban     c0ban\n\
+			lyra2v3     Vertcoin\n\
 			myr-gr      Myriad-Groestl\n\
 			neoscrypt   neoscrypt\n\
 			neoscrypt-xaya	Xaya\n\
@@ -1403,6 +1405,7 @@ static bool stratum_gen_work(struct stratum_ctx *sctx, struct work *work)
 		case ALGO_GROESTL:
 		case ALGO_KECCAK:
 		case ALGO_LYRA2v2:
+		case ALGO_LYRA2vc0ban:
 		case ALGO_LYRA2v3:
 			diff_to_target(work->target, sctx->job.diff / (256.0 * opt_difficulty));
 			break;
@@ -1660,6 +1663,7 @@ static void *miner_thread(void *userdata)
 				minmax = 1000000ULL * max64time;
 				break;
 			case ALGO_LYRA2v2:
+			case ALGO_LYRA2vc0ban:
 			case ALGO_LYRA2v3:
 				minmax = 1900000ULL * max64time;
 				break;
@@ -1797,6 +1801,11 @@ static void *miner_thread(void *userdata)
 
 		case ALGO_LYRA2v2:
 			rc = scanhash_lyra2v2(thr_id, work.data, work.target,
+				max_nonce, &hashes_done);
+			break;
+			
+		case ALGO_LYRA2vc0ban:
+			rc = scanhash_lyra2vc0ban(thr_id, work.data, work.target,
 				max_nonce, &hashes_done);
 			break;
 
